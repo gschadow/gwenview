@@ -834,6 +834,13 @@ void DocumentView::rotationsGesture(qreal rotation)
 
 void DocumentView::swipeRight()
 {
+    AbstractImageView *imageView = d->mAdapter->imageView();
+    if (!imageView) {
+        // Non-zoomable content (e.g. videos): there is nothing to scroll, so a
+        // swipe simply navigates.
+        Q_EMIT d->mAdapter->previousImageRequested();
+        return;
+    }
     const QPoint scrollPos = d->mAdapter->scrollPos().toPoint();
     if (scrollPos.x() <= 1) {
         Q_EMIT d->mAdapter->previousImageRequested();
@@ -842,7 +849,14 @@ void DocumentView::swipeRight()
 
 void DocumentView::swipeLeft()
 {
-    const QSizeF dipSize = d->mAdapter->imageView()->dipDocumentSize();
+    AbstractImageView *imageView = d->mAdapter->imageView();
+    if (!imageView) {
+        // Non-zoomable content (e.g. videos): there is nothing to scroll, so a
+        // swipe simply navigates.
+        Q_EMIT d->mAdapter->nextImageRequested();
+        return;
+    }
+    const QSizeF dipSize = imageView->dipDocumentSize();
     const QPoint scrollPos = d->mAdapter->scrollPos().toPoint();
     const int width = dipSize.width() * d->mAdapter->zoom();
     const QRect visibleRect = d->mAdapter->visibleDocumentRect().toRect();
