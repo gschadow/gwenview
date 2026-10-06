@@ -289,7 +289,7 @@ struct ViewMainPagePrivate {
         QObject::connect(view, &DocumentView::hudTrashClicked, q, &ViewMainPage::trashView);
         QObject::connect(view, &DocumentView::hudDeselectClicked, q, &ViewMainPage::deselectView);
 
-        QObject::connect(view, &DocumentView::videoFinished, mSlideShow, &SlideShow::resumeAndGoToNextUrl);
+        QObject::connect(view, &DocumentView::videoFinished, q, &ViewMainPage::slotVideoFinished);
 
         mDocumentViews << view;
 
@@ -785,6 +785,18 @@ void ViewMainPage::reset()
 void ViewMainPage::slotViewFocused(DocumentView *view)
 {
     d->setCurrentView(view);
+}
+
+void ViewMainPage::slotVideoFinished()
+{
+    if (d->mSlideShow->isRunning()) {
+        d->mSlideShow->resumeAndGoToNextUrl();
+    } else {
+        // Not in a slideshow: advance to the next image. If there is nothing to
+        // advance to, MainWindow keeps the current document, which is paused on
+        // its last frame.
+        Q_EMIT nextImageRequested();
+    }
 }
 
 void ViewMainPage::slotEnterPressed()

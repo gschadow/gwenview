@@ -137,7 +137,11 @@ struct SlideShowPrivate {
 
     void doStart()
     {
-        if (MimeTypeUtils::urlKind(mCurrentUrl) == MimeTypeUtils::KIND_VIDEO) {
+        // Videos that loop are advanced by the interval timer just like images,
+        // so a video shorter than the interval repeats until its turn is over.
+        // When looping is disabled, wait for the video to end and advance then.
+        const bool waitForVideoEnd = MimeTypeUtils::urlKind(mCurrentUrl) == MimeTypeUtils::KIND_VIDEO && !GwenviewConfig::loopVideos();
+        if (waitForVideoEnd) {
             LOG("mState = WaitForEndOfUrl");
             // Just in case
             mTimer->stop();

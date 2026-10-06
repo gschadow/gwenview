@@ -147,6 +147,8 @@ private Q_SLOTS:
 
     void slotDirModelItemsAddedOrRemoved();
 
+    void slotVideoFinished();
+
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 

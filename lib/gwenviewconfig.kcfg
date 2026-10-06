@@ -287,6 +287,11 @@
             <default>false</default>
         </entry>
 
+        <entry name="LoopVideos" type="Bool">
+            <label>Repeat videos when they reach the end</label>
+            <default>true</default>
+        </entry>
+
         <entry name="WrapAfterLast" type="Bool">
             <default>true</default>
         </entry>

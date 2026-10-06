@@ -201,9 +201,26 @@ VideoViewAdapter::VideoViewAdapter()
     d->q = this;
     d->mMediaPlayer = new QMediaPlayer(this);
     connect(d->mMediaPlayer, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status) {
-        if (status == QMediaPlayer::EndOfMedia) {
-            Q_EMIT videoFinished();
+        if (status != QMediaPlayer::EndOfMedia) {
+            return;
         }
+        if (GwenviewConfig::loopVideos()) {
+            // Normally handled by QMediaPlayer's own looping (see setDocument),
+            // but restart explicitly as well so a finished video never stops on
+            // a black frame on backends that do not honor setLoops().
+            d->mMediaPlayer->setPosition(0);
+            d->mMediaPlayer->play();
+            return;
+        }
+        // Do not let the player clear the screen to black: hold the last frame
+        // so that, when there is nothing to advance to, the final image stays
+        // visible. Listeners may still move on to the next document.
+        const qint64 duration = d->mMediaPlayer->duration();
+        if (duration > 0) {
+            d->mMediaPlayer->setPosition(qMax<qint64>(0, duration - 1));
+            d->mMediaPlayer->pause();
+        }
+        Q_EMIT videoFinished();
     });
 
     d->mWidget = new QGraphicsWidget;
@@ -249,6 +266,8 @@ void VideoViewAdapter::setDocument(const Document::Ptr &doc)
     d->mHud->show();
     d->mDocument = doc;
     d->mMediaPlayer->setSource(d->mDocument->url());
+    // Set after setSource(), which resets the player to its initial state.
+    d->mMediaPlayer->setLoops(GwenviewConfig::loopVideos() ? QMediaPlayer::Infinite : QMediaPlayer::Once);
     if (GwenviewConfig::autoplayVideos()) {
         d->mMediaPlayer->play();
         Q_EMIT slotOutputVolumeChanged(d->mAudioOutput->volume());

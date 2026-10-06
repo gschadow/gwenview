@@ -36,20 +36,14 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <widget class="QCheckBox" name="kcfg_LoopVideos">
+     <property name="toolTip">
+      <string>When enabled, a video repeats until you move on. When disabled, playback advances to the next image as soon as the video ends (or holds the last frame if there is nowhere to advance).</string>
      </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
+     <property name="text">
+      <string>Loop videos</string>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_7">
@@ -279,6 +273,7 @@
  <tabstops>
   <tabstop>kcfg_ListVideos</tabstop>
   <tabstop>kcfg_AutoplayVideos</tabstop>
+  <tabstop>kcfg_LoopVideos</tabstop>
   <tabstop>neverShowWrapNoticeRadioButton</tabstop>
   <tabstop>wrapNoticeOnSlideshowRadioButton</tabstop>
   <tabstop>alwaysShowWrapNoticeRadioButton</tabstop>
